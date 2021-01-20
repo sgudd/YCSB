@@ -1,9 +1,6 @@
 package site.ycsb.db.hfu;
 
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonFactory;
@@ -103,21 +100,25 @@ public class AkkaRestApiClient extends DB {
     command.setKey(key);
     // TODO add support for fields
     try {
-      GetCompleted response = requestFactory.buildPostRequest(
+      HttpResponse httpResponse = requestFactory.buildPostRequest(
             new AkkaRestApiUrl(getHostForKey(key), AkkaRestApiUrl.GET),
             new JsonHttpContent(jsonFactory, command))
-          .execute()
-          .parseAs(GetCompleted.class);
-      if (response.isFound()) {
-        if (fields == null) {
-          StringByteIterator.putAllAsByteIterators(result, response.getValue());
-        } else {
-          for (String field : fields) {
-            result.put(field, new StringByteIterator(response.getValue().get(field)));
+          .execute();
+      try {
+        GetCompleted response = httpResponse.parseAs(GetCompleted.class);
+        if (response.isFound()) {
+          if (fields == null) {
+            StringByteIterator.putAllAsByteIterators(result, response.getValue());
+          } else {
+            for (String field : fields) {
+              result.put(field, new StringByteIterator(response.getValue().get(field)));
+            }
           }
+        } else {
+          status = Status.NOT_FOUND;
         }
-      } else {
-        status = Status.NOT_FOUND;
+      } finally {
+        httpResponse.disconnect();
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -145,9 +146,10 @@ public class AkkaRestApiClient extends DB {
     command.setValue(StringByteIterator.getStringMap(values));
     try {
       requestFactory.buildPostRequest(
-            new AkkaRestApiUrl(getHostForKey(key), AkkaRestApiUrl.PUT),
-            new JsonHttpContent(jsonFactory, command))
-          .execute();
+          new AkkaRestApiUrl(getHostForKey(key), AkkaRestApiUrl.PUT),
+          new JsonHttpContent(jsonFactory, command))
+          .execute()
+          .disconnect();
     } catch (IOException e) {
       e.printStackTrace();
       status = Status.ERROR;
