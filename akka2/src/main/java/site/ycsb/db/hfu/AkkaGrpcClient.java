@@ -21,6 +21,9 @@ public class AkkaGrpcClient extends DB {
   private Map<String, String> shardToHostMapping;
   private int numberOfShards;
 
+  private int allReads = 0;
+  private int totalReads = 0;
+
   public AkkaGrpcClient() {
     // Object creation isn't done concurrently so there is no need for thread-safety here
     threadId = THREAD_COUNTER;
@@ -70,6 +73,7 @@ public class AkkaGrpcClient extends DB {
         e.printStackTrace();
       }
     }
+    System.out.printf("[%d] All fields read %d/%d times.%n", threadId, allReads, totalReads);
   }
 
   @Override
@@ -79,6 +83,7 @@ public class AkkaGrpcClient extends DB {
     Clientapi.GetCompleted response = getGrpcClientForKey(key).get(key);
     if (response.getFound()) {
       if (fields == null) {
+        ++allReads;
         StringByteIterator.putAllAsByteIterators(result, response.getValueMap());
       } else {
         for (String field : fields) {
@@ -88,6 +93,7 @@ public class AkkaGrpcClient extends DB {
     } else {
       status = Status.NOT_FOUND;
     }
+    ++totalReads;
     return status;
   }
 
