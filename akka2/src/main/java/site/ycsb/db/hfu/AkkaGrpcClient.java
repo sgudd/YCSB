@@ -6,6 +6,9 @@ import site.ycsb.*;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ *
+ */
 public class AkkaGrpcClient extends DB {
 
   private static final String PROPERTY_HOSTS = "akka.hosts";
@@ -20,9 +23,6 @@ public class AkkaGrpcClient extends DB {
   private boolean clientSideHashingEnabled;
   private Map<String, String> shardToHostMapping;
   private int numberOfShards;
-
-  private int allReads = 0;
-  private int totalReads = 0;
 
   public AkkaGrpcClient() {
     // Object creation isn't done concurrently so there is no need for thread-safety here
@@ -73,17 +73,25 @@ public class AkkaGrpcClient extends DB {
         e.printStackTrace();
       }
     }
-    System.out.printf("[%d] All fields read %d/%d times.%n", threadId, allReads, totalReads);
   }
 
+  /**
+   * The fields-option is currently not supported. All fields are always received from the DB and
+   * the ones not requested are then removed from the result.
+   *
+   * It is not recommended to run workloads with readallfields=false on this binding.
+   * @param table
+   * @param key
+   * @param fields
+   * @param result
+   * @return
+   */
   @Override
   public Status read(String table, String key, Set<String> fields, Map<String, ByteIterator> result) {
     Status status = Status.OK;
-    // TODO add support for fields
     Clientapi.GetCompleted response = getGrpcClientForKey(key).get(key);
     if (response.getFound()) {
       if (fields == null) {
-        ++allReads;
         StringByteIterator.putAllAsByteIterators(result, response.getValueMap());
       } else {
         for (String field : fields) {
@@ -93,7 +101,6 @@ public class AkkaGrpcClient extends DB {
     } else {
       status = Status.NOT_FOUND;
     }
-    ++totalReads;
     return status;
   }
 
