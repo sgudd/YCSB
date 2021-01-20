@@ -167,8 +167,8 @@ LICENSE file.
     <module>cassandra</module>
     <module>cloudspanner</module>
     <module>couchbase</module>
-		<module>couchbase2</module>
-		<module>crail</module>
+    <module>couchbase2</module>
+    <module>crail</module>
     <module>dynamodb</module>
     <module>elasticsearch</module>
     <module>elasticsearch5</module>
@@ -179,6 +179,8 @@ LICENSE file.
     <module>griddb</module>
     <module>hbase1</module>
     <module>hbase2</module>
+    <module>akka1</module>
+    <module>akka2</module>
     <module>ignite</module>
     <module>infinispan</module>
     <module>jdbc</module>
