@@ -1,6 +1,7 @@
 package site.ycsb.db.hfu;
 
 import com.google.api.client.http.*;
+import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonFactory;
@@ -53,7 +54,7 @@ public class AkkaRestApiClient extends DB {
     THREAD_COUNTER = THREAD_COUNTER + 1;
 
     // Do some more initialization here to avoid overloading the init() process
-    httpTransport = new NetHttpTransport();
+    httpTransport = new ApacheHttpTransport();
     jsonFactory = new JacksonFactory();
     requestFactory = httpTransport.createRequestFactory(
         (HttpRequest request) -> {
