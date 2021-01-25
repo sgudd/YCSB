@@ -43,11 +43,12 @@ public class BlockingGrpcKeyValueStoreClient implements AutoCloseable {
         return blockingStub.get(command);
     }
 
-    public Clientapi.PutCompleted put(String key, Map<String, String> values) {
+    public Clientapi.PutCompleted put(String key, Map<String, String> values, boolean persist) {
         Clientapi.PutCommand command = Clientapi.PutCommand
                 .newBuilder()
                 .setKey(key)
                 .putAllValue(values)
+                .setPersist(persist)
                 .build();
         return blockingStub.put(command);
     }

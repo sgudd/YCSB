@@ -9,6 +9,8 @@ public class PutCommand {
   private String key;
   @Key
   private Map<String, String> value;
+  @Key
+  private boolean persist;
 
   public String getKey() {
     return key;
@@ -25,4 +27,8 @@ public class PutCommand {
   public void setValue(Map<String, String> value) {
     this.value = value;
   }
+
+  public boolean isPersist() { return persist; }
+
+  public void setPersist(boolean persist) { this.persist = persist; }
 }

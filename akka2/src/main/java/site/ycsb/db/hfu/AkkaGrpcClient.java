@@ -14,6 +14,7 @@ public class AkkaGrpcClient extends DB {
   private static final String PROPERTY_HOSTS = "akka.hosts";
   private static final String PROPERTY_CLIENT_SIDE_HASHING = "akka.client-side-hashing";
   private static final String PROPERTY_NUMBER_OF_SHARDS = "akka.number-of-shards";
+  private static final String PROPERTY_PERSIST = "akka.persist";
 
   private static int THREAD_COUNTER = 0;
   private final int threadId;
@@ -23,6 +24,7 @@ public class AkkaGrpcClient extends DB {
   private boolean clientSideHashingEnabled;
   private Map<String, String> shardToHostMapping;
   private int numberOfShards;
+  private boolean persistEnabled;
 
   public AkkaGrpcClient() {
     // Object creation isn't done concurrently so there is no need for thread-safety here
@@ -54,6 +56,7 @@ public class AkkaGrpcClient extends DB {
     } else {
       System.out.printf("[%d] Initialized for single host %s.%n", threadId, host);
     }
+    persistEnabled = Boolean.parseBoolean(properties.getProperty(PROPERTY_PERSIST, "true"));
   }
 
   @Override
@@ -117,7 +120,7 @@ public class AkkaGrpcClient extends DB {
   @Override
   public Status insert(String table, String key, Map<String, ByteIterator> values) {
     getGrpcClientForKey(key)
-        .put(key, StringByteIterator.getStringMap(values));
+        .put(key, StringByteIterator.getStringMap(values), persistEnabled);
     return Status.OK;
   }
 

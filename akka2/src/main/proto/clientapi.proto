@@ -20,6 +20,7 @@ message GetCompleted {
 message PutCommand {
   string key = 1;
   map<string, string> value = 2;
+  bool persist = 3;
 }
 
 message PutCompleted {
