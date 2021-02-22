@@ -43,7 +43,7 @@ public class BlockingGrpcKeyValueStoreClient implements AutoCloseable {
         return blockingStub.get(command);
     }
 
-    public Clientapi.PutCompleted put(String key, Map<String, String> values, boolean persist) {
+    public Clientapi.Ok put(String key, Map<String, String> values, boolean persist) {
         Clientapi.PutCommand command = Clientapi.PutCommand
                 .newBuilder()
                 .setKey(key)
@@ -51,6 +51,15 @@ public class BlockingGrpcKeyValueStoreClient implements AutoCloseable {
                 .setPersist(persist)
                 .build();
         return blockingStub.put(command);
+    }
+
+    public Clientapi.Ok delete(String key, boolean persist) {
+      Clientapi.DeleteCommand command = Clientapi.DeleteCommand
+          .newBuilder()
+          .setKey(key)
+          .setPersist(persist)
+          .build();
+      return blockingStub.delete(command);
     }
 
     public Clientapi.ShardingState queryClusterState() {

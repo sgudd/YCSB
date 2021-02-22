@@ -125,8 +125,10 @@ public class AkkaGrpcClient extends DB {
   }
 
   @Override
-  public Status delete(String s, String s1) {
-    return Status.NOT_IMPLEMENTED;
+  public Status delete(String table, String key) {
+    getGrpcClientForKey(key)
+        .delete(key, persistEnabled);
+    return Status.OK;
   }
 
   private void loadShardingState() throws IOException {

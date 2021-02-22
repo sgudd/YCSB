@@ -3,7 +3,8 @@ package de.hfu.keyvaluestore.protocol.generated;
 
 service KeyValueStoreService {
   rpc Get (GetCommand) returns (GetCompleted) {}
-  rpc Put (PutCommand) returns (PutCompleted) {}
+  rpc Put (PutCommand) returns (Ok) {}
+  rpc Delete (DeleteCommand) returns (Ok) {}
   rpc QueryShardingState (QueryShardingStateMessage) returns (ShardingState) {}
 }
 
@@ -23,7 +24,12 @@ message PutCommand {
   bool persist = 3;
 }
 
-message PutCompleted {
+message DeleteCommand {
+  string key = 1;
+  bool persist = 2;
+}
+
+message Ok {
   string key = 1;
 }
 
