@@ -167,7 +167,7 @@ public class AkkaRestApiClient extends DB {
     Status status = Status.OK;
     DeleteCommand command = new DeleteCommand();
     command.setKey(key);
-    command.set
+    command.setPersist(persistEnabled);
     try {
       requestFactory.buildPostRequest(
           new AkkaRestApiUrl(getHostForKey(key), AkkaRestApiUrl.DELETE),
