@@ -164,7 +164,21 @@ public class AkkaRestApiClient extends DB {
 
   @Override
   public Status delete(String table, String key) {
-    return Status.NOT_IMPLEMENTED;
+    Status status = Status.OK;
+    DeleteCommand command = new DeleteCommand();
+    command.setKey(key);
+    command.set
+    try {
+      requestFactory.buildPostRequest(
+          new AkkaRestApiUrl(getHostForKey(key), AkkaRestApiUrl.DELETE),
+          new JsonHttpContent(jsonFactory, command))
+          .execute()
+          .disconnect();
+    } catch (IOException e) {
+      e.printStackTrace();
+      status = Status.ERROR;
+    }
+    return status;
   }
 
   private void loadShardingState() throws IOException {

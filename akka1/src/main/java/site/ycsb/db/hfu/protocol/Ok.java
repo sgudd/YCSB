@@ -2,7 +2,7 @@ package site.ycsb.db.hfu.protocol;
 
 import com.google.api.client.util.Key;
 
-public class PutCompleted {
+public class Ok {
   @Key
   private String key;
 
